@@ -1,0 +1,24 @@
+type User {
+    id: ID! @id
+    username: String! @unique
+    password: String!
+    email: String!
+    created_at: DateTime! @createdAt
+    chats: [Chat]! 
+}
+
+type Chat {
+    id: ID! @id
+    chat_name: String
+    is_private: Boolean
+    messages: [Message]!
+    users: [User]! @relation(link: TABLE)
+}
+
+type Message {
+    id: ID! @id
+    chat_id: Chat! @relation(link: INLINE)
+    user: User! @relation(link: INLINE)
+    message: String!
+    created_at: DateTime @createdAt
+}

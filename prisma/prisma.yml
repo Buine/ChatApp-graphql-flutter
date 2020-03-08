@@ -1,0 +1,7 @@
+endpoint: http://localhost:4466
+datamodel: datamodel.prisma
+
+# Specifies language & location for the generated Prisma client
+generate:
+  - generator: javascript-client
+    output: ../src/generated/prisma-client

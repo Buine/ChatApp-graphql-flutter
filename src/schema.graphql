@@ -1,0 +1,44 @@
+type Query {
+    users: [User]!
+}
+
+type Mutation {
+    login(username: String!, password: String!): AuthPayLoad
+    signup(username: String!, password: String!, email: String!): AuthPayLoad
+}
+
+type Subscription {
+    newMessage(token: String!): Message
+}
+
+type AuthPayLoad {
+    token: String!
+    user: User
+}
+
+type User {
+    id: ID!
+    username: String!
+    email: String!
+    created_at: DateTime!
+    chats: [Chat]!
+}
+
+type Chat {
+    id: ID!
+    users: [User!]!
+    messages: [Message]!
+    is_private: Boolean!
+    created_at: DateTime!
+}
+
+type Message {
+    id: ID!
+    chat_id: Chat!
+    user: User!
+    message: String!
+    created_at: DateTime!
+}
+
+scalar ID
+scalar DateTime
