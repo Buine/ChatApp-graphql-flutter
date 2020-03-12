@@ -1,10 +1,12 @@
 type Query {
-    users: [User]!
+    users(filter: String): [User]!
+    chats: [Chat]!
 }
 
 type Mutation {
     login(username: String!, password: String!): AuthPayLoad
     signup(username: String!, password: String!, email: String!): AuthPayLoad
+    send_message(chat: String!, message: String!): Message
 }
 
 type Subscription {
@@ -35,9 +37,17 @@ type Chat {
 type Message {
     id: ID!
     chat_id: Chat!
+    chat_name: String!
     user: User!
     message: String!
+    viewed: [Viewed]!
     created_at: DateTime!
+}
+
+type Viewed {
+    id: ID!
+    user: User!
+    viewed_date: DateTime!
 }
 
 scalar ID

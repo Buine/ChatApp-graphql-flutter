@@ -15,6 +15,10 @@ type AggregateUser {
   count: Int!
 }
 
+type AggregateViewed {
+  count: Int!
+}
+
 type BatchPayload {
   count: Long!
 }
@@ -263,6 +267,7 @@ type Message {
   chat_id: Chat!
   user: User!
   message: String!
+  viewed(where: ViewedWhereInput, orderBy: ViewedOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Viewed!]
   created_at: DateTime
 }
 
@@ -277,6 +282,7 @@ input MessageCreateInput {
   chat_id: ChatCreateOneWithoutMessagesInput!
   user: UserCreateOneInput!
   message: String!
+  viewed: ViewedCreateManyInput
 }
 
 input MessageCreateManyWithoutChat_idInput {
@@ -288,6 +294,7 @@ input MessageCreateWithoutChat_idInput {
   id: ID
   user: UserCreateOneInput!
   message: String!
+  viewed: ViewedCreateManyInput
 }
 
 type MessageEdge {
@@ -374,6 +381,7 @@ input MessageUpdateInput {
   chat_id: ChatUpdateOneRequiredWithoutMessagesInput
   user: UserUpdateOneRequiredInput
   message: String
+  viewed: ViewedUpdateManyInput
 }
 
 input MessageUpdateManyDataInput {
@@ -404,6 +412,7 @@ input MessageUpdateManyWithWhereNestedInput {
 input MessageUpdateWithoutChat_idDataInput {
   user: UserUpdateOneRequiredInput
   message: String
+  viewed: ViewedUpdateManyInput
 }
 
 input MessageUpdateWithWhereUniqueWithoutChat_idInput {
@@ -448,6 +457,9 @@ input MessageWhereInput {
   message_not_starts_with: String
   message_ends_with: String
   message_not_ends_with: String
+  viewed_every: ViewedWhereInput
+  viewed_some: ViewedWhereInput
+  viewed_none: ViewedWhereInput
   created_at: DateTime
   created_at_not: DateTime
   created_at_in: [DateTime!]
@@ -484,6 +496,11 @@ type Mutation {
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   deleteUser(where: UserWhereUniqueInput!): User
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  createViewed(data: ViewedCreateInput!): Viewed!
+  updateViewed(data: ViewedUpdateInput!, where: ViewedWhereUniqueInput!): Viewed
+  upsertViewed(where: ViewedWhereUniqueInput!, create: ViewedCreateInput!, update: ViewedUpdateInput!): Viewed!
+  deleteViewed(where: ViewedWhereUniqueInput!): Viewed
+  deleteManyVieweds(where: ViewedWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -513,6 +530,9 @@ type Query {
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  viewed(where: ViewedWhereUniqueInput!): Viewed
+  vieweds(where: ViewedWhereInput, orderBy: ViewedOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Viewed]!
+  viewedsConnection(where: ViewedWhereInput, orderBy: ViewedOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ViewedConnection!
   node(id: ID!): Node
 }
 
@@ -520,6 +540,7 @@ type Subscription {
   chat(where: ChatSubscriptionWhereInput): ChatSubscriptionPayload
   message(where: MessageSubscriptionWhereInput): MessageSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  viewed(where: ViewedSubscriptionWhereInput): ViewedSubscriptionPayload
 }
 
 type User {
@@ -824,6 +845,154 @@ input UserWhereInput {
 input UserWhereUniqueInput {
   id: ID
   username: String
+}
+
+type Viewed {
+  id: ID!
+  user: User!
+  viewed_date: DateTime!
+}
+
+type ViewedConnection {
+  pageInfo: PageInfo!
+  edges: [ViewedEdge]!
+  aggregate: AggregateViewed!
+}
+
+input ViewedCreateInput {
+  id: ID
+  user: UserCreateOneInput!
+}
+
+input ViewedCreateManyInput {
+  create: [ViewedCreateInput!]
+  connect: [ViewedWhereUniqueInput!]
+}
+
+type ViewedEdge {
+  node: Viewed!
+  cursor: String!
+}
+
+enum ViewedOrderByInput {
+  id_ASC
+  id_DESC
+  viewed_date_ASC
+  viewed_date_DESC
+}
+
+type ViewedPreviousValues {
+  id: ID!
+  viewed_date: DateTime!
+}
+
+input ViewedScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  viewed_date: DateTime
+  viewed_date_not: DateTime
+  viewed_date_in: [DateTime!]
+  viewed_date_not_in: [DateTime!]
+  viewed_date_lt: DateTime
+  viewed_date_lte: DateTime
+  viewed_date_gt: DateTime
+  viewed_date_gte: DateTime
+  AND: [ViewedScalarWhereInput!]
+  OR: [ViewedScalarWhereInput!]
+  NOT: [ViewedScalarWhereInput!]
+}
+
+type ViewedSubscriptionPayload {
+  mutation: MutationType!
+  node: Viewed
+  updatedFields: [String!]
+  previousValues: ViewedPreviousValues
+}
+
+input ViewedSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: ViewedWhereInput
+  AND: [ViewedSubscriptionWhereInput!]
+  OR: [ViewedSubscriptionWhereInput!]
+  NOT: [ViewedSubscriptionWhereInput!]
+}
+
+input ViewedUpdateDataInput {
+  user: UserUpdateOneRequiredInput
+}
+
+input ViewedUpdateInput {
+  user: UserUpdateOneRequiredInput
+}
+
+input ViewedUpdateManyInput {
+  create: [ViewedCreateInput!]
+  update: [ViewedUpdateWithWhereUniqueNestedInput!]
+  upsert: [ViewedUpsertWithWhereUniqueNestedInput!]
+  delete: [ViewedWhereUniqueInput!]
+  connect: [ViewedWhereUniqueInput!]
+  set: [ViewedWhereUniqueInput!]
+  disconnect: [ViewedWhereUniqueInput!]
+  deleteMany: [ViewedScalarWhereInput!]
+}
+
+input ViewedUpdateWithWhereUniqueNestedInput {
+  where: ViewedWhereUniqueInput!
+  data: ViewedUpdateDataInput!
+}
+
+input ViewedUpsertWithWhereUniqueNestedInput {
+  where: ViewedWhereUniqueInput!
+  update: ViewedUpdateDataInput!
+  create: ViewedCreateInput!
+}
+
+input ViewedWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  user: UserWhereInput
+  viewed_date: DateTime
+  viewed_date_not: DateTime
+  viewed_date_in: [DateTime!]
+  viewed_date_not_in: [DateTime!]
+  viewed_date_lt: DateTime
+  viewed_date_lte: DateTime
+  viewed_date_gt: DateTime
+  viewed_date_gte: DateTime
+  AND: [ViewedWhereInput!]
+  OR: [ViewedWhereInput!]
+  NOT: [ViewedWhereInput!]
+}
+
+input ViewedWhereUniqueInput {
+  id: ID
 }
 `
       }

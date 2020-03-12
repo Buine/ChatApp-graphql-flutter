@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { APP_SECRET, getUserId } = require('../utils')
+const { APP_SECRET, getUserID } = require('../utils')
 
 async function login (root, args, context) {
     const user = await context.prisma.user({ username: args.username })
@@ -31,8 +31,30 @@ async function signup (root, args, context) {
     return { token, user }
 }
 
+async function send_message(root, args, context) {
+    const userId = getUserID(context)
+    const verify = await context.prisma.chatsConnection({
+        where: {
+            AND: [
+                { id: args.chat },
+                { users_some: { id: userId } },
+            ]
+        }
+    }).edges()[0]
+
+    if (!verify) {
+        throw new Error("No perteneces a este chat o el chat no existe")
+    }
+    
+    return await context.prisma.createMessage({
+        message: args.message,
+        chat_id: { connect: { id: args.chat } },
+        user: { connect: { id: userId } },
+    })
+}
+
 module.exports = {
     login,
     signup,
-
+    send_message,
 }

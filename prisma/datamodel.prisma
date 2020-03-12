@@ -20,5 +20,12 @@ type Message {
     chat_id: Chat! @relation(link: INLINE)
     user: User! @relation(link: INLINE)
     message: String!
+    viewed: [Viewed]!
     created_at: DateTime @createdAt
+}
+
+type Viewed {
+    id: ID! @id
+    user: User!
+    viewed_date: DateTime! @createdAt
 }
