@@ -28,4 +28,5 @@ type Viewed {
     id: ID! @id
     user: User!
     viewed_date: DateTime! @createdAt
+    message: Message! @relation(link: TABLE)
 }

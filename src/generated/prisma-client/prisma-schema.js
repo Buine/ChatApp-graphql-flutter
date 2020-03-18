@@ -282,7 +282,7 @@ input MessageCreateInput {
   chat_id: ChatCreateOneWithoutMessagesInput!
   user: UserCreateOneInput!
   message: String!
-  viewed: ViewedCreateManyInput
+  viewed: ViewedCreateManyWithoutMessageInput
 }
 
 input MessageCreateManyWithoutChat_idInput {
@@ -290,11 +290,23 @@ input MessageCreateManyWithoutChat_idInput {
   connect: [MessageWhereUniqueInput!]
 }
 
+input MessageCreateOneWithoutViewedInput {
+  create: MessageCreateWithoutViewedInput
+  connect: MessageWhereUniqueInput
+}
+
 input MessageCreateWithoutChat_idInput {
   id: ID
   user: UserCreateOneInput!
   message: String!
-  viewed: ViewedCreateManyInput
+  viewed: ViewedCreateManyWithoutMessageInput
+}
+
+input MessageCreateWithoutViewedInput {
+  id: ID
+  chat_id: ChatCreateOneWithoutMessagesInput!
+  user: UserCreateOneInput!
+  message: String!
 }
 
 type MessageEdge {
@@ -381,7 +393,7 @@ input MessageUpdateInput {
   chat_id: ChatUpdateOneRequiredWithoutMessagesInput
   user: UserUpdateOneRequiredInput
   message: String
-  viewed: ViewedUpdateManyInput
+  viewed: ViewedUpdateManyWithoutMessageInput
 }
 
 input MessageUpdateManyDataInput {
@@ -409,15 +421,33 @@ input MessageUpdateManyWithWhereNestedInput {
   data: MessageUpdateManyDataInput!
 }
 
+input MessageUpdateOneRequiredWithoutViewedInput {
+  create: MessageCreateWithoutViewedInput
+  update: MessageUpdateWithoutViewedDataInput
+  upsert: MessageUpsertWithoutViewedInput
+  connect: MessageWhereUniqueInput
+}
+
 input MessageUpdateWithoutChat_idDataInput {
   user: UserUpdateOneRequiredInput
   message: String
-  viewed: ViewedUpdateManyInput
+  viewed: ViewedUpdateManyWithoutMessageInput
+}
+
+input MessageUpdateWithoutViewedDataInput {
+  chat_id: ChatUpdateOneRequiredWithoutMessagesInput
+  user: UserUpdateOneRequiredInput
+  message: String
 }
 
 input MessageUpdateWithWhereUniqueWithoutChat_idInput {
   where: MessageWhereUniqueInput!
   data: MessageUpdateWithoutChat_idDataInput!
+}
+
+input MessageUpsertWithoutViewedInput {
+  update: MessageUpdateWithoutViewedDataInput!
+  create: MessageCreateWithoutViewedInput!
 }
 
 input MessageUpsertWithWhereUniqueWithoutChat_idInput {
@@ -851,6 +881,7 @@ type Viewed {
   id: ID!
   user: User!
   viewed_date: DateTime!
+  message: Message!
 }
 
 type ViewedConnection {
@@ -862,11 +893,17 @@ type ViewedConnection {
 input ViewedCreateInput {
   id: ID
   user: UserCreateOneInput!
+  message: MessageCreateOneWithoutViewedInput!
 }
 
-input ViewedCreateManyInput {
-  create: [ViewedCreateInput!]
+input ViewedCreateManyWithoutMessageInput {
+  create: [ViewedCreateWithoutMessageInput!]
   connect: [ViewedWhereUniqueInput!]
+}
+
+input ViewedCreateWithoutMessageInput {
+  id: ID
+  user: UserCreateOneInput!
 }
 
 type ViewedEdge {
@@ -932,34 +969,35 @@ input ViewedSubscriptionWhereInput {
   NOT: [ViewedSubscriptionWhereInput!]
 }
 
-input ViewedUpdateDataInput {
-  user: UserUpdateOneRequiredInput
-}
-
 input ViewedUpdateInput {
   user: UserUpdateOneRequiredInput
+  message: MessageUpdateOneRequiredWithoutViewedInput
 }
 
-input ViewedUpdateManyInput {
-  create: [ViewedCreateInput!]
-  update: [ViewedUpdateWithWhereUniqueNestedInput!]
-  upsert: [ViewedUpsertWithWhereUniqueNestedInput!]
+input ViewedUpdateManyWithoutMessageInput {
+  create: [ViewedCreateWithoutMessageInput!]
   delete: [ViewedWhereUniqueInput!]
   connect: [ViewedWhereUniqueInput!]
   set: [ViewedWhereUniqueInput!]
   disconnect: [ViewedWhereUniqueInput!]
+  update: [ViewedUpdateWithWhereUniqueWithoutMessageInput!]
+  upsert: [ViewedUpsertWithWhereUniqueWithoutMessageInput!]
   deleteMany: [ViewedScalarWhereInput!]
 }
 
-input ViewedUpdateWithWhereUniqueNestedInput {
-  where: ViewedWhereUniqueInput!
-  data: ViewedUpdateDataInput!
+input ViewedUpdateWithoutMessageDataInput {
+  user: UserUpdateOneRequiredInput
 }
 
-input ViewedUpsertWithWhereUniqueNestedInput {
+input ViewedUpdateWithWhereUniqueWithoutMessageInput {
   where: ViewedWhereUniqueInput!
-  update: ViewedUpdateDataInput!
-  create: ViewedCreateInput!
+  data: ViewedUpdateWithoutMessageDataInput!
+}
+
+input ViewedUpsertWithWhereUniqueWithoutMessageInput {
+  where: ViewedWhereUniqueInput!
+  update: ViewedUpdateWithoutMessageDataInput!
+  create: ViewedCreateWithoutMessageInput!
 }
 
 input ViewedWhereInput {
@@ -986,6 +1024,7 @@ input ViewedWhereInput {
   viewed_date_lte: DateTime
   viewed_date_gt: DateTime
   viewed_date_gte: DateTime
+  message: MessageWhereInput
   AND: [ViewedWhereInput!]
   OR: [ViewedWhereInput!]
   NOT: [ViewedWhereInput!]
