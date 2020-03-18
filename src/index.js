@@ -7,6 +7,7 @@ const Subscription = require("../src/resolvers/Subscription")
 const Message = require("../src/resolvers/Message")
 const User = require("../src/resolvers/User")
 const Chat = require("../src/resolvers/Chat")
+const Viewed = require("../src/resolvers/Viewed")
 
 const resolvers = {
     Query,
@@ -15,6 +16,7 @@ const resolvers = {
     Message,
     User,
     Chat,
+    Viewed,
 }
 
 const server = new GraphQLServer({

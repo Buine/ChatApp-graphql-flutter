@@ -1,6 +1,8 @@
 type Query {
     users(filter: String): [User]!
     chats: [Chat]!
+    messages(chat: String!, first: Int, orderBy: MessageOrderByInput = created_at_DESC): [Message]!
+    info_message(message: String!): [Viewed]!
 }
 
 type Mutation {
@@ -30,7 +32,7 @@ type User {
 type Chat {
     id: ID!
     users: [User!]!
-    messages: [Message]!
+    messages(onlyLastMessage: Boolean = false): [Message]!
     is_private: Boolean!
     created_at: DateTime!
 }
@@ -50,6 +52,15 @@ type Viewed {
     user: User!
     viewed_date: DateTime!
     message: Message!
+}
+
+enum MessageOrderByInput {
+  id_ASC
+  id_DESC
+  message_ASC
+  message_DESC
+  created_at_ASC
+  created_at_DESC
 }
 
 scalar ID
