@@ -28,6 +28,7 @@ type Chat {
   chat_name: String
   is_private: Boolean
   messages(where: MessageWhereInput, orderBy: MessageOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Message!]
+  created_at: DateTime!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
 }
 
@@ -81,12 +82,15 @@ enum ChatOrderByInput {
   chat_name_DESC
   is_private_ASC
   is_private_DESC
+  created_at_ASC
+  created_at_DESC
 }
 
 type ChatPreviousValues {
   id: ID!
   chat_name: String
   is_private: Boolean
+  created_at: DateTime!
 }
 
 input ChatScalarWhereInput {
@@ -120,6 +124,14 @@ input ChatScalarWhereInput {
   chat_name_not_ends_with: String
   is_private: Boolean
   is_private_not: Boolean
+  created_at: DateTime
+  created_at_not: DateTime
+  created_at_in: [DateTime!]
+  created_at_not_in: [DateTime!]
+  created_at_lt: DateTime
+  created_at_lte: DateTime
+  created_at_gt: DateTime
+  created_at_gte: DateTime
   AND: [ChatScalarWhereInput!]
   OR: [ChatScalarWhereInput!]
   NOT: [ChatScalarWhereInput!]
@@ -246,6 +258,14 @@ input ChatWhereInput {
   messages_every: MessageWhereInput
   messages_some: MessageWhereInput
   messages_none: MessageWhereInput
+  created_at: DateTime
+  created_at_not: DateTime
+  created_at_in: [DateTime!]
+  created_at_not_in: [DateTime!]
+  created_at_lt: DateTime
+  created_at_lte: DateTime
+  created_at_gt: DateTime
+  created_at_gte: DateTime
   users_every: UserWhereInput
   users_some: UserWhereInput
   users_none: UserWhereInput
@@ -580,6 +600,7 @@ type User {
   email: String!
   created_at: DateTime!
   chats(where: ChatWhereInput, orderBy: ChatOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Chat!]
+  blocked(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
 }
 
 type UserConnection {
@@ -594,6 +615,12 @@ input UserCreateInput {
   password: String!
   email: String!
   chats: ChatCreateManyWithoutUsersInput
+  blocked: UserCreateManyInput
+}
+
+input UserCreateManyInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input UserCreateManyWithoutChatsInput {
@@ -611,6 +638,7 @@ input UserCreateWithoutChatsInput {
   username: String!
   password: String!
   email: String!
+  blocked: UserCreateManyInput
 }
 
 type UserEdge {
@@ -732,6 +760,7 @@ input UserUpdateDataInput {
   password: String
   email: String
   chats: ChatUpdateManyWithoutUsersInput
+  blocked: UserUpdateManyInput
 }
 
 input UserUpdateInput {
@@ -739,12 +768,25 @@ input UserUpdateInput {
   password: String
   email: String
   chats: ChatUpdateManyWithoutUsersInput
+  blocked: UserUpdateManyInput
 }
 
 input UserUpdateManyDataInput {
   username: String
   password: String
   email: String
+}
+
+input UserUpdateManyInput {
+  create: [UserCreateInput!]
+  update: [UserUpdateWithWhereUniqueNestedInput!]
+  upsert: [UserUpsertWithWhereUniqueNestedInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  deleteMany: [UserScalarWhereInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
 }
 
 input UserUpdateManyMutationInput {
@@ -781,6 +823,12 @@ input UserUpdateWithoutChatsDataInput {
   username: String
   password: String
   email: String
+  blocked: UserUpdateManyInput
+}
+
+input UserUpdateWithWhereUniqueNestedInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateDataInput!
 }
 
 input UserUpdateWithWhereUniqueWithoutChatsInput {
@@ -789,6 +837,12 @@ input UserUpdateWithWhereUniqueWithoutChatsInput {
 }
 
 input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
+}
+
+input UserUpsertWithWhereUniqueNestedInput {
+  where: UserWhereUniqueInput!
   update: UserUpdateDataInput!
   create: UserCreateInput!
 }
@@ -867,6 +921,9 @@ input UserWhereInput {
   chats_every: ChatWhereInput
   chats_some: ChatWhereInput
   chats_none: ChatWhereInput
+  blocked_every: UserWhereInput
+  blocked_some: UserWhereInput
+  blocked_none: UserWhereInput
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]

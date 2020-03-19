@@ -1,6 +1,7 @@
 type Query {
     users(filter: String): [User]!
     chats: [Chat]!
+    info_chat(chat: String!): Chat
     messages(chat: String!, first: Int, orderBy: MessageOrderByInput = created_at_DESC): [Message]!
     info_message(message: String!): [Viewed]!
 }
@@ -10,6 +11,7 @@ type Mutation {
     signup(username: String!, password: String!, email: String!): AuthPayLoad
     send_message(chat: String!, message: String!): Message
     view_message(chat: String!): [Message]!
+    create_private_chat(user: String!): Chat!
 }
 
 type Subscription {
@@ -27,11 +29,13 @@ type User {
     email: String!
     created_at: DateTime!
     chats: [Chat]!
+    blocked: [User]!
 }
 
 type Chat {
     id: ID!
     users: [User!]!
+    chat_name: String
     messages(onlyLastMessage: Boolean = false): [Message]!
     is_private: Boolean!
     created_at: DateTime!
