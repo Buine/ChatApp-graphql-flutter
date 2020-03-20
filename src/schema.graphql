@@ -1,6 +1,7 @@
 type Query {
     users(filter: String): [User]!
-    chats: [Chat]!
+    info_user(user: String!): User
+    chats(first: Int): [Chat]!
     info_chat(chat: String!): Chat
     messages(chat: String!, first: Int, orderBy: MessageOrderByInput = created_at_DESC): [Message]!
     info_message(message: String!): [Viewed]!
@@ -12,6 +13,12 @@ type Mutation {
     send_message(chat: String!, message: String!): Message
     view_message(chat: String!): [Message]!
     create_private_chat(user: String!): Chat!
+    create_group_chat(chat_name: String!, users: [String!]!): Chat
+    add_users_group_chat(chat: String!, users: [String!]!): Chat
+    delete_users_group_chat(chat: String!, users: [String!]!): Chat
+    left_group_chat(chat: String!): Chat
+    block_user(user: String!): User
+    unblock_user(user: String!): User
 }
 
 type Subscription {
@@ -28,17 +35,24 @@ type User {
     username: String!
     email: String!
     created_at: DateTime!
-    chats: [Chat]!
+    chats: [Member]!
     blocked: [User]!
 }
 
 type Chat {
     id: ID!
-    users: [User!]!
+    users: [Member]!
     chat_name: String
     messages(onlyLastMessage: Boolean = false): [Message]!
     is_private: Boolean!
     created_at: DateTime!
+}
+
+type Member {
+    id: ID!
+    chat: Chat!
+    user: User!
+    class: Class_User!
 }
 
 type Message {
@@ -65,6 +79,12 @@ enum MessageOrderByInput {
   message_DESC
   created_at_ASC
   created_at_DESC
+}
+
+enum Class_User {
+    ADMIN
+    MODERATOR
+    USER
 }
 
 scalar ID

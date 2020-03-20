@@ -13,11 +13,19 @@ var models = [
     embedded: false
   },
   {
+    name: "Member",
+    embedded: false
+  },
+  {
     name: "Message",
     embedded: false
   },
   {
     name: "Viewed",
+    embedded: false
+  },
+  {
+    name: "Class_User",
     embedded: false
   }
 ];

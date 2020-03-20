@@ -6,6 +6,11 @@ function users (root, args, context, info) {
     return context.prisma.users({ "where": where })
 }
 
+function info_user (root, args, context, info) {
+    const userId = getUserID(context)
+    return context.prisma.user({ id: args.user })
+}
+
 async function info_chat(root, args, context, info) {
     var userId = getUserID(context)
 
@@ -20,10 +25,10 @@ async function info_chat(root, args, context, info) {
         where: { 
             AND: [
                 { id: args.chat },
-                { users_some: { id: userId } },
+                { users_some: { user: { id: userId } } },
                 { OR: [
                     { is_private: false },
-                    { AND: [ { is_private: true }, { users_none: { id_in: list } } ] }
+                    { AND: [ { is_private: true }, { users_none: { user: { id_in: list } } } ] }
                 ], },
             ],
         } 
@@ -44,13 +49,15 @@ async function chats (root, args, context, info) {
     return context.prisma.chats({ 
         where: { 
             AND: [
-                { users_some: { id: userId } },
+                { users_some: { user: { id: userId } } },
                 { OR: [
                     { is_private: false },
-                    { AND: [ { is_private: true }, { users_none: { id_in: list } } ] }
-                ], },
-            ],
-        } 
+                    { AND: [ { is_private: true }, { users_none: { user: { id_in: list } } } ] },
+                ], 
+                }
+            ]
+        },
+        first: args.first,
     })
 }
 
@@ -58,7 +65,7 @@ function messages (root, args, context, info) {
     const userId = getUserID(context)
     return context.prisma.messages({ 
         where: { 
-            chat_id: { AND: [{ id: args.chat }, { users_some: { id: userId } }] }
+            chat_id: { AND: [{ id: args.chat }, { users_some: { user: { id: userId } } }] }
         },
         orderBy: args.orderBy,
         first: args.first 

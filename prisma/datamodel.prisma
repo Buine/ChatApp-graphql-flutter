@@ -4,7 +4,7 @@ type User {
     password: String!
     email: String!
     created_at: DateTime! @createdAt
-    chats: [Chat]!
+    chats: [Member]!
     blocked: [User]! 
 }
 
@@ -14,7 +14,14 @@ type Chat {
     is_private: Boolean
     messages: [Message]!
     created_at: DateTime! @createdAt
-    users: [User]! @relation(link: TABLE)
+    users: [Member]!
+}
+
+type Member {
+    id: ID! @id
+    chat: Chat! @relation(link: TABLE)
+    user: User! @relation(link: TABLE)
+    class: Class_User!
 }
 
 type Message {
@@ -31,4 +38,10 @@ type Viewed {
     user: User!
     viewed_date: DateTime! @createdAt
     message: Message! @relation(link: TABLE)
+}
+
+enum Class_User {
+    ADMIN
+    MODERATOR
+    USER
 }
