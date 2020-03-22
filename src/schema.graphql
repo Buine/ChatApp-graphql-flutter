@@ -19,6 +19,7 @@ type Mutation {
     left_group_chat(chat: String!): Chat
     block_user(user: String!): User
     unblock_user(user: String!): User
+    change_class_group_chat(chat: String!, user: String!, class: Class_User!): Member
 }
 
 type Subscription {

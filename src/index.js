@@ -22,7 +22,7 @@ const resolvers = {
 }
 
 const server = new GraphQLServer({
-    typeDefs: 'C:/Users/Buine-PC/ChatApp/src/schema.graphql',
+    typeDefs: './src/schema.graphql',
     resolvers,
     context: request => {
         return {

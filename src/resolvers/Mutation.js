@@ -313,7 +313,7 @@ async function left_group_chat(root, args, context) {
     if(memberId[0].node.class == "ADMIN"){
        const newAdmin = await context.prisma.membersConnection({
             where: { chat: { id: args.chat } },
-            orderBy: "class_DESC",
+            orderBy: "class_ASC",
             first: 1
         }).edges()
         await context.prisma.updateMember({ where: { id: newAdmin[0].node.id }, data: { class: "ADMIN" } })
@@ -340,6 +340,54 @@ function unblock_user(root, args, context) {
     })
 }
 
+// Definir siendo administrador cambiarse de rango deberia asignarse el administrador a alguien mas?
+async function change_class_group_chat(root, args, context) {
+    const userId = getUserID(context)
+    //Logic here!
+    const classes = { ADMIN: 3, MODERATOR: 2, USER: 1 }
+    const infoUsers = await context.prisma.membersConnection({
+        where: {
+            AND: [
+                { chat: { id: args.chat } },
+                { 
+                    OR:[
+                        { user: { id: userId } },
+                        { user: { id: args.user } },
+                    ]
+                }
+            ],
+        },
+        orderBy: "class_ASC"
+    }).edges()
+
+    console.log("Debug [Change Class] ", { user: infoUsers[0].node , class: args.class  })
+    
+    if(userId == args.user){
+        if(classes[infoUsers[0].node.class] < classes[args.class]){
+            throw new Error("No tienes permisos para realizar esta acción")
+        }
+        infoUsers.push(infoUsers[0])
+        console.log(infoUsers)
+    } else {
+         if(infoUsers.length != 2) {
+            throw new Error("El usuario seleccionado no es valido")
+        }
+        
+        const userHavePermission = (await context.prisma.member({
+            id: infoUsers[0].node.id
+        }).user()).id == userId
+    
+        if(!userHavePermission || classes[infoUsers[0].node.class] < classes[args.class]){
+            throw new Error("No tienes permisos para relizar esta acción")
+        }  
+    }
+
+    return context.prisma.updateMember({
+        data: { class: args.class },
+        where: { id: infoUsers[1].node.id }
+    })
+}
+
 module.exports = {
     login,
     signup,
@@ -352,4 +400,5 @@ module.exports = {
     left_group_chat,
     block_user,
     unblock_user,
+    change_class_group_chat,
 }
